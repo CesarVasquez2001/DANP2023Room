@@ -11,10 +11,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
@@ -24,12 +26,14 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -70,72 +74,44 @@ fun Greeting5(navController: NavController, repository: Repository) {
 
     val TAG: String = "RoomDatabase"
     val scope = rememberCoroutineScope()
+    val coursestudents = remember { mutableStateOf<List<CourseWithStudent>?>(null) }
 
-
-    var test: List<CourseWithStudent>
-
-
-    val courseWithStudentsOnClick: () -> Unit = {
+    LaunchedEffect(Unit) {
         scope.launch {
-            repository.getCourseWithStudents().forEach {
-                Log.d(TAG, it.toString())
-            }
+            val courses = repository.getCourseWithStudents()
+            coursestudents.value = courses
         }
     }
-
-
-
-    LazyColumn(
-        contentPadding = PaddingValues(all = 20.dp),
-        verticalArrangement = Arrangement.spacedBy(5.dp),
-
-        ) {
-
-
-    }
-
-}
-
-
-@Composable
-fun ListItemRow(courseWithStudent: CourseWithStudent) {
-    var more = remember { mutableStateOf(false) }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(shape = MaterialTheme.shapes.small)
-            .background(color = MaterialTheme.colors.secondary)
-            .padding(horizontal = 16.dp, vertical = 10.dp)
+    Column(
+        modifier = Modifier.padding(20.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-            ) {
+        if (coursestudents.value != null) {
+            Courses(coursestudents = coursestudents.value!!)
+        }
+    }
 
-                Text(
-                    text = courseWithStudent.course.name,
-                    style = MaterialTheme.typography.body2
-                )
-                if (more.value) {
-                    Text(
-                        text = "Monto pagado: " + courseWithStudent.students.toString()
-                    )
+
+}
+@Composable
+fun Courses(coursestudents: List<CourseWithStudent>) {
+    LazyColumn(contentPadding = PaddingValues(vertical = 5.dp, horizontal = 5.dp)) {
+        items(coursestudents) { courseStudent ->
+            Spacer(modifier = Modifier.height(10.dp))
+            Card(backgroundColor = Color.Blue) {
+                Box(Modifier.padding(10.dp)) {
+                    Text(text = courseStudent.course.name)
+                    Column(Modifier.padding(top = 26.dp)) {
+                        courseStudent.students.map { student ->
+                            Text(text = student.fullname)
+                        }
+                    }
                 }
-
-            }
-            OutlinedButton(onClick = {
-                /*TODO*/
-                more.value = !more.value
-            }) {
-
-                Text(if (more.value) "Ocultar" else "Mas")
             }
         }
-
     }
 }
+
+
+

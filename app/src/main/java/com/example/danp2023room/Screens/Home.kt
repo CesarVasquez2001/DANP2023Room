@@ -72,7 +72,6 @@ fun RoomSample(repository: Repository,navController: NavController) {
         val fillDataOnClick = {
             fillTables(repository, scope)
         }
-
         val studentsOnClick: () -> Unit = {
             scope.launch {
                 repository.getAllStudents().forEach {
@@ -80,7 +79,6 @@ fun RoomSample(repository: Repository,navController: NavController) {
                 }
             }
         }
-
         val booksOnClick: () -> Unit = {
             scope.launch {
                 repository.getAllCourses().forEach {
@@ -88,7 +86,6 @@ fun RoomSample(repository: Repository,navController: NavController) {
                 }
             }
         }
-
         val studentWithBooksOnClick: () -> Unit = {
             scope.launch {
                 repository.getStudentWithCourses().forEach {
@@ -96,8 +93,6 @@ fun RoomSample(repository: Repository,navController: NavController) {
                 }
             }
         }
-
-
         val courseWithStudentsOnClick: () -> Unit = {
             scope.launch {
                 repository.getCourseWithStudents().forEach {
@@ -139,34 +134,26 @@ fun RoomSample(repository: Repository,navController: NavController) {
 }
 
 fun fillTables(rep: Repository, scope: CoroutineScope) {
-
     val students = listOf(
         StudentEntity(1, "Cesar Paul Vasquez Alvarez"),
         StudentEntity(2, "Diego Esteban Porto Cruz"),
         StudentEntity(3, "Samir Diego Castillo Martinez"),
         StudentEntity(4, "Gerald Hector Ramos Chalco")
     )
-
     val courses = listOf(
         CourseEntity(1, "Fundamentos de la programacion"),
         CourseEntity(2, "Programacion web"),
     )
-
     val studentCourseRelations = listOf(
         UserCourseCrossRef(1, 1),
         UserCourseCrossRef(2, 1),
         UserCourseCrossRef(3, 2),
         UserCourseCrossRef(4, 2),
     )
-
-
-
     scope.launch {
         rep.insertStudents(students)
         rep.insertCourses(courses)
         rep.insertStudentWithCourses(studentCourseRelations)
     }
-
-
 }
 
